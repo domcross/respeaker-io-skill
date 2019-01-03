@@ -1,6 +1,6 @@
 import time
 from pixel_ring import pixel_ring
-import mraa
+from . import mraa
 import os
 from mycroft import MycroftSkill, intent_file_handler
 from mycroft.util.log import LOG
@@ -19,6 +19,7 @@ class RespeakerPixelRing(MycroftSkill):
         self.en.dir(mraa.DIR_OUT)
         self.en.write(0)
         pixel_ring.set_brightness(20)
+        pixel_ring.wakeup()
 
         self.add_event('recognizer_loop:record_begin',
                        self.handle_listener_wakeup)
@@ -31,9 +32,11 @@ class RespeakerPixelRing(MycroftSkill):
                        self.handle_listener_think)
         self.add_event('mycroft.skill.handler.complete',
                        self.handle_listener_off)
+        pixel_ring.off()
 
     def shutdown(self):
         LOG.debug("shutdown")
+        pixel_ring.off()
         self.en.write(1)
 
     def handle_listener_wakeup(self, message):
